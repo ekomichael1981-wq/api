@@ -104,11 +104,7 @@ class ConversationEngine:
     """Make Japa Genie chat naturally in groups"""
     
     def __init__(self):
-        self.response_rates = {
-            "private": 0.8,
-            "group": 0.3,
-            "supergroup": 0.25
-        }
+        # Response rates removed for 100% mode
         
         # Smart response templates
         self.visa_responses = [
@@ -136,28 +132,13 @@ class ConversationEngine:
     def should_respond(self, message_data: Dict) -> bool:
         """Smart decision engine for responses"""
         text = message_data.get("text", "").strip()
-        chat_type = message_data.get("chat_type", "private")
-        
-        # Don't respond to very short messages
-        if len(text.split()) < 3:
-            return False
         
         # Don't respond to commands
         if text.startswith("/"):
             return False
-        
-        # Check if it's a question
-        is_question = any(q in text.lower() for q in ['?', 'how', 'what', 'where', 'when', 'why', 'can', 'should', 'does', 'is'])
-        
-        # Base response rate
-        base_rate = self.response_rates.get(chat_type, 0.3)
-        
-        # Increase rate for questions or visa topics
-        if is_question or message_data.get("visa_detected", False):
-            base_rate = min(base_rate * 1.5, 0.9)
-        
-        # Random decision with rate
-        return random.random() < base_rate
+            
+        # Respond to everything else (100% rate)
+        return True
     
     def generate_response(self, text: str, visa_detected: bool) -> str:
         """Generate natural, helpful response"""
